@@ -1,0 +1,151 @@
+package com.model;
+
+//This class is used for user login credentials
+public class Login {
+
+	private String email;
+	private String pass;
+	public Login(String email, String pass) {
+		super();
+		this.email = email;
+		this.pass = pass;
+	}
+	public Login() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getPass() {
+		return pass;
+	}
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+}
+
+--------------------------------------------------------------------------------------------------
+
+package com.servlet;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+
+/**
+ * Servlet implementation class LoginServlet
+ */
+//This will serve as my login servlet for the application
+@WebServlet("/LoginServlet")
+public class LoginServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		//This declaration is used to initialize email and password 
+		//strings to values entered by the user
+		String email= request.getParameter("email");
+		String pass= request.getParameter("pass");
+		
+		//This if else statement is used to authenticate the user signing in
+		//If authenticated, the user will be directed to the loginsuccess.jsp
+		//Else the user will be prompted with a message showing invalid credentials
+		if(email.equals("em@g.com") && pass.equals("password")){
+			HttpSession session= request.getSession();
+			session.setAttribute("sesname", request.getParameter("email"));
+			response.sendRedirect("loginsuccess.jsp");
+		}
+		else{
+			response.getWriter().println("user validation error");
+		}
+	}
+	
+
+	}
+
+--------------------------------------------------------------------------------------------------
+
+package com.servlet;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+
+//This servlet will serve as the servlet for the logout process
+@WebServlet("/Logout")
+public class Logout extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+   
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		//This function is used to invalidate the session in order to properly log the user out
+		HttpSession session=request.getSession(false);
+		session.invalidate();
+		//This function is used to redirect the user back to the login page after logging out
+		response.sendRedirect("login.html");
+	}
+
+}
+
+-------------------------------------------------------------------------------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+<form method="post" action="LoginServlet">
+
+Email:<input type="text" name="email">
+Password: <input type="password" name="pass"><br/>
+
+
+
+
+<button type="submit">Login</button>
+
+</form>
+</body>
+</html>
+
+-------------------------------------------------------------------------------------------------
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+welcome <%= session.getAttribute("sesname") %>
+
+<br/>
+<a href="Logout">Logout</a>
+</body>
+</html>
